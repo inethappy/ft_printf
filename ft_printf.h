@@ -22,19 +22,15 @@ typedef struct      s_flags
     int hh;
     int l;
     int ll;
+    int L;
+
+    int prec;
+
+    int width;
+    //enum width{digit, star};
 
     char con;
-    
-    // int d;
-    // int i;
-    // int o;
-    // int u;
-    // int x;
-    // int X;
-    // int s;
-    // int c;
-    // int p;
-}                   t_flags;
+ }                   t_flags;
 
 int ft_printf(const char *format, ...);
 void ft_parsing(t_base *base);

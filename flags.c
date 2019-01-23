@@ -15,20 +15,14 @@ void ft_search_width(char *fmt, t_flags *flags)
     flags->hh = (*fmt == 'h' && *(fmt + 1) == 'h') ? 1 : 0;
     flags->l = (*fmt == 'l' && *(fmt + 1) != 'l') ? 1 : 0;
     flags->ll = (*fmt == 'l' && *(fmt + 1) == 'l') ? 1 : 0;
+    flags->L = (*fmt == 'L') ? 1 : 0;
 }
-
-// void ft_search_specifier(char *fmt, t_flags *flags)
-// {
-//     flags->d = (*fmt == 'd') ? 1 : 0;
-// }
 
 void work_flags(t_base *base, t_flags *flags)
 {
     int d = 0;
-    if (/*flags->plus && */flags->con == 'd')
-    {
-        //while (*fmt)??
+    if (flags->con == 'd')
         d = va_arg(base->ap, int);
-        ft_putnbr(d);
-    }
+            ft_putnbr(d);
+    
 }

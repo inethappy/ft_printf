@@ -6,17 +6,21 @@ void ft_parsing(t_base *base)
 
     ft_bzero(&flags, sizeof(flags));
     //ft_memalloc(sizeof(flags));
-    while (ft_strchr("#0- +hldiouxXscp", *base->fmt))// all flags need to be here (?)
+    while (ft_strchr("#0- +12345789*.lhLdiouxXscp", *base->fmt))// all flags need to be here (?)
     {
         if (ft_strchr("#0- +", *base->fmt))
             ft_search_flags(base->fmt, &flags);
-        else if (ft_strchr("hl", *base->fmt))
+        else if (ft_strchr("123456789*", *base->fmt))
+            flags.width = (ft_atoi(base->fmt)) ? ft_atoi(base->fmt) : -1;
+        else if (ft_strchr(".", *base->fmt) && ft_strchr("123456789*", *(base->fmt + 1)))
+            flags.prec = ft_atoi(++base->fmt) ? ft_atoi(base->fmt) : -1;
+        else if (ft_strchr("hlL", *base->fmt))
             ft_search_width(base->fmt, &flags);
         else if (ft_strchr("diouxXscp", *base->fmt))
-            flags.con = base->fmt[0];
-            //ft_search_specifier(base->fmt, &flags);
+            flags.con = *base->fmt;
         base->fmt++;
     }
+    printf("%d\n", flags.prec);
     work_flags(base, &flags);
     base->fmt--;
 }
@@ -32,14 +36,11 @@ int ft_printf(const char *format, ...)
         if (*base.fmt == '%')
         {
             base.fmt++;
-            // if (!*format)//?
-            //     break ;
             ft_parsing(&base);
         }
         else
             ft_putchar(*base.fmt); //save in str?
         base.fmt++; 
-    
     }
     va_end(base.ap);
     return 0;
@@ -48,14 +49,14 @@ int ft_printf(const char *format, ...)
 int main()
 {
     int b;
-    b = 42343;
+    b = 42;
     // char *b;
     // b = "asdas";
     int g;
     g = 4397440;
-    printf("printf: %d, %d\n", b, g); 
+    printf("printf: %.7d, %d\n", b, g); 
     //printf( "%0*.*d", 5, 5, 44);
-    ft_printf("ft_printf: %hd, %d\n", b, g);
+    ft_printf("ft_printf: %.*d, %d\n", b, g);
     //system("leaks ft_printf.out");
     return 0;
 }

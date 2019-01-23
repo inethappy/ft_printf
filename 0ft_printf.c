@@ -4,7 +4,7 @@
 
 int ft_printf(const char *format, ...)
 {
-    int d = 0;
+    char d;
     va_list ap;
     va_start(ap, format);
     while (*format)
@@ -13,7 +13,7 @@ int ft_printf(const char *format, ...)
         {
             format++;
             d = va_arg(ap, int);
-            ft_putnbr(d);
+            ft_putchar(d);
             format++;
         } 
         ft_putchar(*format);
@@ -27,12 +27,12 @@ int main()
 {
     // int b;
     // b = 3400000;
-    char *b;
-    b = "asdas";
+    char b;
+    b = 'b';
     int g;
     g = -666;
-    printf("printf: %s, %d\n", b, g); 
-    printf( "%0*X", 15 , 1);
-    ft_printf("ft_printf: %d, %d\n", b, g);
+   // printf("printf: %s, %d\n", b, g); 
+    //printf( "%0*X", 15 , 1);
+    ft_printf("ft_printf: %c\n", b);
     return 0;
 }
