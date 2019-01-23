@@ -3,3 +3,5 @@ CMakeLists.txt
 .*
 /libft/*.o
 ft_printf.out
+*.o
+libftprintf.a
