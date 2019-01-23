@@ -22,8 +22,18 @@ typedef struct      s_flags
     int hh;
     int l;
     int ll;
+
+    char con;
     
-    int d;
+    // int d;
+    // int i;
+    // int o;
+    // int u;
+    // int x;
+    // int X;
+    // int s;
+    // int c;
+    // int p;
 }                   t_flags;
 
 int ft_printf(const char *format, ...);
@@ -32,8 +42,6 @@ void ft_search_flags(char *fmt, t_flags *flags);
 void ft_search_width(char *fmt, t_flags *flags);
 void ft_search_specifier(char *fmt, t_flags *flags);
 void work_flags(t_base *base, t_flags *flags);
-
-
 
 
 #endif
