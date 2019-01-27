@@ -7,12 +7,9 @@ void print_con_dioux(t_base *base, t_flags *flags)
     if (flags->con == 'd' || flags->con == 'i')
     {
         d = va_arg(base->ap, int);
-        padding(t_base base, t_flags flags);
-        
-
-        
-        //ft_putnbr(d);
+        ft_printing_d(d, flags);
     }
+        
 
 }
 
@@ -38,14 +35,27 @@ void print_con_scp(t_base *base, t_flags *flags)
 // void print_con_f(t_base *base, t_flags *flags)
 // {}
 
-char *padding(t_base *base, t_flags *flags)
-{
-    char *str;
 
-    str = ft_strnew(flags->width);
-    if (flags->null)
-        ft_memset(str, 0, flags->width);
-    else
-        ft_memset(str, ' ', flags->width);
-    return (str);
-}
+
+// char *padding(t_base *base, t_flags *flags)
+// {
+//     char *str;
+
+//     str = ft_strnew(flags->width);
+//     if (flags->null && flags->width)
+//         ft_memset(str, 0, flags->width);
+//     else if (!flags->null && flags->width)
+//         ft_memset(str, ' ', flags->width);
+
+
+
+    // else if (!flags->null && !flags-width)
+
+    // else
+
+
+//     prec
+//     return (str);
+//         if (d && flahs->plus) ...
+
+// }

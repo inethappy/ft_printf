@@ -6,22 +6,27 @@ void ft_parsing(t_base *base)
 
     ft_bzero(&flags, sizeof(flags));
     //ft_memalloc(sizeof(flags));
-    while (ft_strchr("#0- +12345789*.lhL", *base->fmt))// all flags need to be here (?)
+    while (ft_strchr(" 0+#-12345789*.lhL", *base->fmt))// all flags need to be here (?)
     {
         if (ft_strchr("#0- +", *base->fmt))
             ft_search_flags(base->fmt, &flags);
         else if (ft_strchr("123456789*", *base->fmt))
-            flags.width = (ft_atoi(base->fmt)) ? ft_atoi(base->fmt) : -1;
+            {
+                ft_search_width(base->fmt, &flags);
+                while (ft_strchr("123456789", *(base->fmt + 1)))
+                    base->fmt += 1;
+            }
         else if (ft_strchr(".", *base->fmt) && ft_strchr("123456789*", *(base->fmt + 1)))
             flags.prec = ft_atoi(++base->fmt) ? ft_atoi(base->fmt) : -1;
         else if (ft_strchr("hlL", *base->fmt))
-            ft_search_width(base->fmt, &flags);
+            ft_search_length(base->fmt, &flags);
+        //printf("null = %d, plus = %d, w = %d\n", flags.null, flags.plus, flags.width);
         base->fmt++;
     }
     if (ft_strchr("diouxXscpfF", *base->fmt))
         flags.con = *base->fmt;
     base->fmt++;
-   //printf("%c\n", flags.con);
+    //printf("%d\n", flags.width);
     work_cur_case(base, &flags);
     base->fmt--;
 }
@@ -56,10 +61,11 @@ int main()
     char c;
     c = 'z';
     int g;
-    g = 4397440;
-    printf("printf: %s, %c, %15d\n", s, c, g); 
+    g = -4397440;
+    printf("printf: %s, %c, [%+35d]\n", s, c, g); 
     //printf( "%0*.*d", 5, 5, 44);
-    ft_printf("ft_printf: %s, %c, %15d\n", s, c, g);
+    ft_printf("ft_printf: %s, %c, %+35d\n", s, c, g);
+
     //system("leaks ft_printf.out");
     return 0;
 }
