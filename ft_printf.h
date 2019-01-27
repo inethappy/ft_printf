@@ -7,7 +7,12 @@
 typedef struct s_base
 {
     va_list ap;
-    char *fmt;    
+    char *fmt;
+
+    int d;
+    char *s;
+    char c;
+    double f;
 }              t_base;
 
 typedef struct      s_flags
@@ -17,6 +22,10 @@ typedef struct      s_flags
     int minus;
     int space;
     int plus;
+
+    int width;
+   
+    int prec;
    
     int h;
     int hh;
@@ -24,9 +33,6 @@ typedef struct      s_flags
     int ll;
     int L;
 
-    int prec;
-
-    int width;
     //enum width{digit, star};
 
     char con;
@@ -34,10 +40,15 @@ typedef struct      s_flags
 
 int ft_printf(const char *format, ...);
 void ft_parsing(t_base *base);
+
 void ft_search_flags(char *fmt, t_flags *flags);
 void ft_search_width(char *fmt, t_flags *flags);
 void ft_search_specifier(char *fmt, t_flags *flags);
-void work_flags(t_base *base, t_flags *flags);
 
+void work_cur_case(t_base *base, t_flags *flags);
+
+void print_con_scp(t_base *base, t_flags *flags);
+void print_con_dioux(t_base *base, t_flags *flags);
+void print_con_f(t_base *base, t_flags *flags);
 
 #endif

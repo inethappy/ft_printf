@@ -2,7 +2,7 @@ NAME	=	libftprintf.a
 OUTPUT	=	ft_printf.out
 CC		=	gcc
 #CFLAGS	=	-Wall -Wextra -Werror
-SOURCES	=	ft_printf.c flags.c
+SOURCES	=	ft_printf.c flags.c printing.c
 			#flags.c
 OBJECTS	=	$(SOURCES:.c=.o)
 

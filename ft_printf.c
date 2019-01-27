@@ -6,7 +6,7 @@ void ft_parsing(t_base *base)
 
     ft_bzero(&flags, sizeof(flags));
     //ft_memalloc(sizeof(flags));
-    while (ft_strchr("#0- +12345789*.lhLdiouxXscp", *base->fmt))// all flags need to be here (?)
+    while (ft_strchr("#0- +12345789*.lhL", *base->fmt))// all flags need to be here (?)
     {
         if (ft_strchr("#0- +", *base->fmt))
             ft_search_flags(base->fmt, &flags);
@@ -16,12 +16,13 @@ void ft_parsing(t_base *base)
             flags.prec = ft_atoi(++base->fmt) ? ft_atoi(base->fmt) : -1;
         else if (ft_strchr("hlL", *base->fmt))
             ft_search_width(base->fmt, &flags);
-        else if (ft_strchr("diouxXscp", *base->fmt))
-            flags.con = *base->fmt;
         base->fmt++;
     }
-    printf("%d\n", flags.prec);
-    work_flags(base, &flags);
+    if (ft_strchr("diouxXscpfF", *base->fmt))
+        flags.con = *base->fmt;
+    base->fmt++;
+   //printf("%c\n", flags.con);
+    work_cur_case(base, &flags);
     base->fmt--;
 }
 
@@ -48,15 +49,17 @@ int ft_printf(const char *format, ...)
 
 int main()
 {
-    int b;
-    b = 42;
-    // char *b;
-    // b = "asdas";
+    int i;
+    i = 42;
+    char *s;
+    s = "asdas";
+    char c;
+    c = 'z';
     int g;
     g = 4397440;
-    printf("printf: %.7d, %d\n", b, g); 
+    printf("printf: %s, %c, %15d\n", s, c, g); 
     //printf( "%0*.*d", 5, 5, 44);
-    ft_printf("ft_printf: %.*d, %d\n", b, g);
+    ft_printf("ft_printf: %s, %c, %15d\n", s, c, g);
     //system("leaks ft_printf.out");
     return 0;
 }

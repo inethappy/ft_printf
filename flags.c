@@ -1,3 +1,4 @@
+//>gcc ft_printf.c flags.c libft\ft_bzero.c libft\ft_strchr.c libft\ft_atoi.c libft\ft_putchar.c libft\ft_putstr.c
 #include "ft_printf.h"
 
 void ft_search_flags(char *fmt, t_flags *flags)
@@ -18,11 +19,13 @@ void ft_search_width(char *fmt, t_flags *flags)
     flags->L = (*fmt == 'L') ? 1 : 0;
 }
 
-void work_flags(t_base *base, t_flags *flags)
+void work_cur_case(t_base *base, t_flags *flags)
 {
-    int d = 0;
-    if (flags->con == 'd')
-        d = va_arg(base->ap, int);
-            ft_putnbr(d);
-    
+    if (ft_strchr("scp", flags->con))
+        print_con_scp(base, flags);
+    else if (ft_strchr("diouxX", flags->con))
+        print_con_dioux(base, flags);
+    // else if (ft_strchr("fF", flags->con))
+    //     print_con_f(base, flags);
 }
+
