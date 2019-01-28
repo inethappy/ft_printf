@@ -43,17 +43,17 @@ int ft_printf(const char *format, ...);
 void ft_parsing(t_base *base);
 
 void ft_search_flags(char *fmt, t_flags *flags);
-void ft_search_width(char *fmt, t_flags *flags);
+void ft_search_prec(t_base *base, t_flags *flags);
+void ft_search_width(t_base *base, t_flags *flags);
 void ft_search_length(char *fmt, t_flags *flags);
 void ft_search_specifier(char *fmt, t_flags *flags);
 
 void work_cur_case(t_base *base, t_flags *flags);
 
 void print_con_scp(t_base *base, t_flags *flags);
-void print_con_dioux(t_base *base, t_flags *flags);
+void ft_printing_di(t_base *base, t_flags *flags);
 void print_con_f(t_base *base, t_flags *flags);
-
-void ft_printing_d(int d, t_flags *flags);
+void ft_print_padding(int di, t_flags *flags, int pad);
 
 
 #endif
