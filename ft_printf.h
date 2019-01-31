@@ -54,6 +54,7 @@ void print_con_scp(t_base *base, t_flags *flags);
 void ft_printing_di(t_base *base, t_flags *flags);
 void print_con_f(t_base *base, t_flags *flags);
 void ft_print_padding(int di, t_flags *flags, int pad);
+void put_sign(int di, t_flags *flags);
 
 
 #endif
