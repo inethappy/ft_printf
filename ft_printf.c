@@ -55,10 +55,10 @@ int main()
     char c;
     c = 'z';
     int g;
-    g = 13423;
-    printf("printf: %s, %c, [%+-10.5d]\n", s, c, g); 
+    g = 12345678;
+    printf("printf: %s, %c, [% 1.1d]\n", s, c, g); 
     //printf( "%0*.*d", 5, 5, 44);
-    ft_printf("ft_printf: %s, %c, [%+-10.5d]\n", s, c, g);
+    ft_printf("ft_printf: %s, %c, [% 1.1d]\n", s, c, g);
 
     //system("leaks ft_printf.out");
     return 0;
