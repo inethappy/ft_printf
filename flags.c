@@ -43,7 +43,8 @@ void work_cur_case(t_base *base, t_flags *flags)
     if (ft_strchr("scp", flags->con))
         print_con_scp(base, flags);
     else if (ft_strchr("di", flags->con))
-        ft_printing_di(base, flags);
+        base->res = ft_printing_di(base, flags);
+    
     // else if (ft_strchr("ouxX", flags->con))
     //     print_con_oux(base, flags);
     // else if (ft_strchr("fF", flags->con))
