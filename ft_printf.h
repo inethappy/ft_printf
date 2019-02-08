@@ -52,13 +52,13 @@ void work_cur_case(t_base *base, t_flags *flags);
 void print_con_scp(t_base *base, t_flags *flags);
 int ft_printing_di(t_base *base, t_flags *flags);
 void print_con_f(t_base *base, t_flags *flags);
-char *ft_print_padding(int di, t_flags *flags, int pad);
-char *put_sign(int di, t_flags *flags);
+char *ft_print_padding(long long int di, t_flags *flags, int pad);
+char *put_sign(long long int di, t_flags *flags);
 
-void put_d_if_minus(int di, t_flags *flags, t_base *base);
+void put_d_if_minus(long long int di, t_flags *flags, t_base *base);
 //void put_prec_minus(int di, t_flags *flags, t_base *base);
 char	*ft_join_all(char *s1, char *s2, char *s3);
-void put_prec(int di, t_flags *flags, char *str);
+void put_prec(long long int di, t_flags *flags, char *str);
 
 
 

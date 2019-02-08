@@ -12,10 +12,10 @@ void ft_search_flags(char *fmt, t_flags *flags)
 
 void ft_search_length(char *fmt, t_flags *flags)
 {
-    flags->h = (*fmt == 'h' && *(fmt + 1) != 'h') ? 1 : 0;
-    flags->hh = (*fmt == 'h' && *(fmt + 1) == 'h') ? 1 : 0;
-    flags->l = (*fmt == 'l' && *(fmt + 1) != 'l') ? 1 : 0;
-    flags->ll = (*fmt == 'l' && *(fmt + 1) == 'l') ? 1 : 0;
+    flags->h = (*fmt == 'h' && *(fmt - 1) != 'h') ? 1 : 0;
+    flags->hh = (*fmt == 'h' && *(fmt - 1) == 'h') ? 1 : 0;
+    flags->l = (*fmt == 'l' && *(fmt - 1) != 'l') ? 1 : 0;
+    flags->ll = (*fmt == 'l' && *(fmt - 1) == 'l') ? 1 : 0;
     flags->L = (*fmt == 'L') ? 1 : 0;
 }
 
@@ -32,10 +32,13 @@ void ft_search_prec(t_base *base, t_flags *flags)
 {
     base->fmt++;
     if ((flags->prec = ft_atoi(base->fmt)))
-        while (ft_strchr("123456789", *(base->fmt + 1)))
-             base->fmt += 1;
-    else
+        while (ft_strchr("0123456789", *(base->fmt + 1)))
+            base->fmt += 1;
+    else if (ft_strchr("*", *(base->fmt)))
+    {
         flags->prec = va_arg(base->ap, int);
+        base->fmt += 1;
+    }
 } 
 
 void work_cur_case(t_base *base, t_flags *flags)
@@ -43,7 +46,7 @@ void work_cur_case(t_base *base, t_flags *flags)
     if (ft_strchr("scp", flags->con))
         print_con_scp(base, flags);
     else if (ft_strchr("di", flags->con))
-        base->res = ft_printing_di(base, flags);
+        base->res = base->res + ft_printing_di(base, flags);
     
     // else if (ft_strchr("ouxX", flags->con))
     //     print_con_oux(base, flags);

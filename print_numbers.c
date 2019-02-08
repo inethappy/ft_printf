@@ -1,22 +1,34 @@
  #include "ft_printf.h"
 
-char	*ft_itoa_new(int n)
+int	ft_len_numb_n(long long int nb)
+{
+	int len;
+
+	len = 0;
+	if (nb < 0)
+	{
+		nb = -nb;
+		len++;
+	}
+	else if (nb == 0)
+		len = 1;
+	while (nb > 0 && ++len)
+		nb /= 10;
+	return (len);
+}
+
+char	*ft_itoa_new(long long int n)
 {
 	char	*fresh;
 	int		len;
-
-	len = ft_len_numb(n);
+	
+    len = ft_len_numb_n(n);
 	if (!(fresh = (char *)malloc(sizeof(char) * len + 1)))
 		return (NULL);
-	if (n == -2147483648)
-		return (ft_strdup("2147483648"));
-	else if (n == 0)
+	if (n == -9223372036854775808)
+	 	return (ft_strdup("9223372036854775808"));
+    if (n == 0)
 		fresh[0] = '0';
-	else if (n < 0)
-	{
-		fresh[0] = '-';
-		n = -n;
-	}
 	fresh[len] = '\0';
 	while (n > 0 && len > 0)
 	{
@@ -65,7 +77,7 @@ char	*ft_join_all(char *s1, char *s2, char *s3)
 	return (fresh);
 }
 
-void put_prec(int di, t_flags *flags, char *str)
+void put_prec(long long int di, t_flags *flags, char *str)
 {
     int i;
     (di < 0) ? ft_memset((str + (flags->width - flags->prec)), 48, (flags->prec - ft_len_numb(di) + 1)) 
@@ -79,7 +91,7 @@ void put_prec(int di, t_flags *flags, char *str)
         str[i] = '-';
 }
 
-char *ft_print_padding(int di, t_flags *flags, int pad)
+char *ft_print_padding(long long int di, t_flags *flags, int pad)
 {
     int var = 0;
     char *str = NULL;
@@ -96,7 +108,7 @@ char *ft_print_padding(int di, t_flags *flags, int pad)
         var = (di < 0) ? (fl - ft_len_numb(di)) : (fl - ft_len_numb(di) - flags->plus);
     str = ft_strnew(var + 1);
     ft_memset(str, pad, var);
-    if (flags->prec >= ft_len_numb(di))//flags->width)
+    if (flags->prec >= ft_len_numb(di) && flags->width)
         put_prec(di, flags, str);
     else if (flags->prec < ft_len_numb(di) && flags->width > ft_len_numb(di))
     {
@@ -106,18 +118,36 @@ char *ft_print_padding(int di, t_flags *flags, int pad)
     return (str);
 }
 
+long long int cast_di(t_base *base, t_flags *flags)
+{
+    if (flags->h)
+        return ((signed short int)va_arg(base->ap, int));
+    else if (flags->hh)
+        return ((signed char)va_arg(base->ap, int));
+    else if (flags->l)
+        return (va_arg(base->ap, long int));   
+    else if (flags->ll)
+        return (va_arg(base->ap, long long int));
+    // else if (flags->L)
+    //     di = va_arg(base->ap, );
+    else
+        return (va_arg(base->ap, int));
+}
 
 int ft_printing_di(t_base *base, t_flags *flags)
 {
-    long long di;
-    di = va_arg(base->ap, int);
+    long long int di;
+    di = cast_di(base, flags);
     base->str = (di < 0) ? ft_itoa_new(-di) : ft_itoa_new(di);
     base->sign = put_sign(di, flags);
-    
+
     if (!flags->minus)
     {
-        
-        if (!flags->width && !flags->prec && !flags->null)
+        if (di == 0 && flags->prec == 0 && !flags->width && !flags->null && !flags->plus)
+            return 0;
+        // else if (di == 0 && flags->prec == 0)
+
+        else if (!flags->width && !flags->prec && !flags->null)
             base->str = ft_join_all(base->sign, ft_print_padding(di, flags, 48), base->str);
         else if ((flags->null && flags->width && !flags->prec) || (flags->width <= flags->prec)
             || (flags->prec && !flags->width))
@@ -125,7 +155,7 @@ int ft_printing_di(t_base *base, t_flags *flags)
         else if (((!flags->null && ((flags->width && !flags->prec) || (flags->width > flags->prec))) 
             || (flags->null && flags->prec && flags->width > flags->prec)))
         {
-            if (flags->width > flags->prec && flags->prec > ft_len_numb(di))
+            if (flags->width > flags->prec && flags->prec >= ft_len_numb(di))
                 ft_strdel(&base->sign);
             base->str = ft_join_all(ft_print_padding(di, flags, 32), base->sign, base->str);
         }
@@ -136,7 +166,7 @@ int ft_printing_di(t_base *base, t_flags *flags)
     return (ft_strlen(base->str));
  }
 
-void put_d_if_minus(int di, t_flags *flags, t_base *base)
+void put_d_if_minus(long long int di, t_flags *flags, t_base *base)
 {
     int i;
     char *s;
@@ -147,12 +177,14 @@ void put_d_if_minus(int di, t_flags *flags, t_base *base)
     {
         if (flags->width > flags->prec && flags->width > ft_len_numb(di) && flags->prec > ft_len_numb(di))
         {
+            
             i = flags->width;
             flags->width = 0;
-            s = ft_join_all(base->sign, ft_print_padding(di, flags, 48), base->str);
+            s = ft_strjoin(base->sign, ft_print_padding(di, flags, 48));//ft_join_all(base->sign, ft_print_padding(di, flags, 48), base->str);
+            s = ft_strjoin(s, base->str);//ft_join_all(base->sign, ft_print_padding(di, flags, 48), base->str);
             flags->width = i - (flags->prec - ft_len_numb(di));
             flags->prec = 0;  
-            base->sign = 0;              
+            ft_strdel(&base->sign);              
             base->str = ft_join_all(base->sign, s, ft_print_padding(di, flags, 32));
         }
         else
@@ -163,13 +195,13 @@ void put_d_if_minus(int di, t_flags *flags, t_base *base)
 }
             
 
-char *put_sign(int di, t_flags *flags)
+char *put_sign(long long di, t_flags *flags)
 {
     char *sign;
 
     sign = ft_strnew(1);
 
-    if (flags->plus && di > 0)
+    if (flags->plus && di >= 0)
         sign[0] = '+';
     else if (di < 0 || ((di < 0) && (flags->width > flags->prec || flags->width < flags->prec)))
         sign[0] = '-';

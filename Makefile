@@ -2,7 +2,7 @@ NAME	=	libftprintf.a
 OUTPUT	=	ft_printf.out
 CC		=	gcc
 #CFLAGS	=	-Wall -Wextra -Werror
-SOURCES	=	ft_printf.c flags.c printing.c print_numbers.c
+SOURCES	=	ft_printf.c flags.c printing.c print_numbers.c 
 OBJECTS	=	$(SOURCES:.c=.o)
 
 all:	$(NAME)
@@ -14,7 +14,7 @@ $(NAME):
 %.o: ./%.c
 	gcc -o $@ -c $<
 test:
-	$(CC) -g -L. libft/libft.a $(SOURCES) -o $(OUTPUT)
+	$(CC) -g -L. libft/libft.a $(SOURCES) main.c -o $(OUTPUT)
 clean:
 	rm -rf *.o 
 	rm -rf libft/*.o
