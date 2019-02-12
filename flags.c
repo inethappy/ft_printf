@@ -1,55 +1,70 @@
-//>gcc ft_printf.c flags.c libft\ft_bzero.c libft\ft_strchr.c libft\ft_atoi.c libft\ft_putchar.c libft\ft_putstr.c
+//>gcc ft_printf.c fl.c libft\ft_bzero.c libft\ft_strchr.c libft\ft_atoi.c libft\ft_putchar.c libft\ft_putstr.c
 #include "ft_printf.h"
 
-void ft_search_flags(char *fmt, t_flags *flags)
+void ft_search_fl(char *fmt, t_flags *fl)
 {
-    flags->hash = (*fmt == '#') ? 1 : flags->hash;
-    flags->space = (*fmt == ' ') ? 1 : flags->space;
-    flags->null = (*fmt == '0') ? 1 : flags->null;
-    flags->minus = (*fmt == '-') ? 1 : flags->minus;
-    flags->plus = (*fmt == '+') ? 1 : flags->plus;
+    fl->hash = (*fmt == '#') ? 1 : fl->hash;
+    fl->space = (*fmt == ' ') ? 1 : fl->space;
+    fl->null = (*fmt == '0') ? 1 : fl->null;
+    fl->minus = (*fmt == '-') ? 1 : fl->minus;
+    fl->plus = (*fmt == '+') ? 1 : fl->plus;
 }
 
-void ft_search_length(char *fmt, t_flags *flags)
+void ft_search_length(char *fmt, t_flags *fl)
 {
-    flags->h = (*fmt == 'h' && *(fmt - 1) != 'h') ? 1 : 0;
-    flags->hh = (*fmt == 'h' && *(fmt - 1) == 'h') ? 1 : 0;
-    flags->l = (*fmt == 'l' && *(fmt - 1) != 'l') ? 1 : 0;
-    flags->ll = (*fmt == 'l' && *(fmt - 1) == 'l') ? 1 : 0;
-    flags->L = (*fmt == 'L') ? 1 : 0;
+    fl->h = (*fmt == 'h' && *(fmt - 1) != 'h') ? 1 : 0;
+    fl->hh = (*fmt == 'h' && *(fmt - 1) == 'h') ? 1 : 0;
+    fl->l = (*fmt == 'l' && *(fmt - 1) != 'l') ? 1 : 0;
+    fl->ll = (*fmt == 'l' && *(fmt - 1) == 'l') ? 1 : 0;
+    fl->L = (*fmt == 'L') ? 1 : fl->L;
+    fl->z = (*fmt == 'z') ? 1 : fl->z;
+    fl->j = (*fmt == 'j') ? 1 : fl->j;
 }
 
-void ft_search_width(t_base *base, t_flags *flags)
+void ft_search_width(t_base *base, t_flags *fl)
 {
-    if ((flags->width = ft_atoi(base->fmt)))
+    if ((fl->width = ft_atoi(base->fmt)))
         while (ft_strchr("1234567890", *(base->fmt + 1)))
              base->fmt += 1;
     else
-        flags->width = va_arg(base->ap, int);
-} 
-
-void ft_search_prec(t_base *base, t_flags *flags)
-{
-    base->fmt++;
-    if ((flags->prec = ft_atoi(base->fmt)))
-        while (ft_strchr("0123456789", *(base->fmt + 1)))
-            base->fmt += 1;
-    else if (ft_strchr("*", *(base->fmt)))
+        fl->width = va_arg(base->ap, int);
+    if (fl->width < 0)
     {
-        flags->prec = va_arg(base->ap, int);
-        base->fmt += 1;
+        fl->minus = 1;
+        fl->width = -fl->width;
     }
 } 
 
-void work_cur_case(t_base *base, t_flags *flags)
+void ft_search_prec(t_base *base, t_flags *fl)
 {
-    if (ft_strchr("scp", flags->con))
-        print_con_scp(base, flags);
-    else if (ft_strchr("di", flags->con))
-        base->res = base->res + ft_printing_di(base, flags);
-    
-    // else if (ft_strchr("ouxX", flags->con))
-    //     print_con_oux(base, flags);
-    // else if (ft_strchr("fF", flags->con))
-    //     print_con_f(base, flags);
+    base->fmt++;
+    if ((fl->prec = ft_atoi(base->fmt)))
+        while (ft_strchr("0123456789", *(base->fmt + 1)))
+            base->fmt++;
+    else if (ft_strchr("*", *(base->fmt)))
+    {
+        fl->prec = va_arg(base->ap, int);
+        if (fl->prec < 0)
+            fl->prec = 0;
+    }
+    else
+    {
+        fl->dot = 1;
+        if (*base->fmt != '0')
+            base->fmt--;
+    }
+} 
+
+void work_cur_case(t_base *base, t_flags *fl)
+{
+    if (ft_strchr("scp", fl->con))
+        base->res = base->res + print_con_scp(base, fl);
+    else if (ft_strchr("di", fl->con))
+        base->res = base->res + print_con_di(base, fl);
+    else if (ft_strchr("o", fl->con))
+        base->res = base->res + print_con_oux(base, fl);
+    // else if (ft_strchr("fF", fl->con))
+    //     print_con_f(base, fl);
+    else
+        base->res = 0;
 }
