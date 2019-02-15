@@ -21,6 +21,7 @@ char *print_padding(long long int di, t_flags *fl, int pad)
     char *str = NULL;
     int wd = 0;
 
+    // fl->con = u ? return(padding_u())
     if ((fl->width > fl->prec && fl->width <= ft_len_nb(di)) 
         || (!fl->width && fl->prec <= ft_len_nb(di)))
         return NULL;
@@ -39,18 +40,20 @@ char *print_padding(long long int di, t_flags *fl, int pad)
         if (fl->space && fl->null && (!fl->plus && di > 0))
             str[0] = 32;
     }
+    if (fl->hash && fl->null)
+        str = hash_x_func(fl, str);
     return (str);
 }
 
-void put_di_if_not_minus(long long int di, t_flags *fl, t_base *base)
+void put_dio_if_not_minus(long long int di, t_flags *fl, t_base *base)
 {
     if (!fl->width && !fl->prec && !fl->null)
         base->str = join_all(base->sign, print_padding(di, fl, 48), base->str);
-    else if ((fl->null && fl->width && !fl->prec) || (fl->width <= fl->prec)
+    else if ((fl->null && fl->width && !fl->prec && !fl->dot) || (fl->width <= fl->prec)
         || (fl->prec && !fl->width))
         base->str = join_all(base->sign, print_padding(di, fl, 48), base->str);
     else if (((!fl->null && ((fl->width && !fl->prec) || (fl->width > fl->prec))) 
-        || (fl->null && fl->prec && fl->width > fl->prec)))
+        || (fl->null && (fl->prec || fl->dot) && fl->width > fl->prec)))
     {
         if (di == 0 && !fl->prec && fl->width)
             base->str[0] = 32;
@@ -60,11 +63,12 @@ void put_di_if_not_minus(long long int di, t_flags *fl, t_base *base)
     }
 }
 
-void put_di_if_minus(long long int di, t_flags *fl, t_base *base)
+void put_dio_if_minus(long long int di, t_flags *fl, t_base *base)
 {
     int i;
     char *s;
 
+    fl->null = 0;
     if (!fl->width && !fl->prec && !fl->null)
         base->str = join_all(base->sign, base->str, print_padding(di, fl, 32));
     else if ((fl->width && !fl->prec) || fl->width > fl->prec)
@@ -73,7 +77,7 @@ void put_di_if_minus(long long int di, t_flags *fl, t_base *base)
         {
             i = fl->width;
             fl->width = 0;
-            s = ft_strjoin(base->sign, print_padding(di, fl, 48));
+            s = (fl->con == 'u') ? print_padding(di, fl, 48) : ft_strjoin(base->sign, print_padding(di, fl, 48));
             s = ft_strjoin(s, base->str);
             fl->width = i - (fl->prec - ft_len_nb(di));
             fl->prec = 0;  

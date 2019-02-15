@@ -62,9 +62,13 @@ void work_cur_case(t_base *base, t_flags *fl)
     else if (ft_strchr("di", fl->con))
         base->res = base->res + print_con_di(base, fl);
     else if (ft_strchr("o", fl->con))
-        base->res = base->res + print_con_oux(base, fl);
+        base->res = base->res + print_con_o(base, fl);
+    else if (ft_strchr("u", fl->con))
+        base->res = base->res + print_con_u(base, fl);
+    else if (ft_strchr("xX", fl->con))
+        base->res = base->res + print_con_xX(base, fl);
     // else if (ft_strchr("fF", fl->con))
-    //     print_con_f(base, fl);
-    else
-        base->res = 0;
+    //     base->res = base->res + print_con_f(base, fl);
+    // else
+    //     base->res = 0;
 }

@@ -17,31 +17,43 @@ int	ft_len_nb(long long int nb)
 	return (len);
 }
 
-char *ft_itoa_base(int value, int base)
+// int	ft_len_nb_uns(unsigned long long int nb)
+// {
+// 	int len;
+
+// 	len = 0;
+// 	else if (nb == 0)
+// 		len = 1;
+// 	while (nb > 0 && ++len)
+// 		nb /= 10;
+// 	return (len);
+// }
+
+char *ft_itoa_base(unsigned long long int value, int base, t_flags *fl)
 {
 	char *str;
 	int i;
-	int value_tmp;
+	unsigned long long int value_tmp;
 	int sign;
+	char x;
 
+	x = (fl->con == 'x') ? 'a' : 'A';
 	value_tmp = value;
-	sign = (value < 0 && base == 10) ? -1 : 0;
-	i = (sign == -1) ? 2 : 1;
-	while((value_tmp /= base) >= 1)
+	i = 1;
+	while ((value_tmp /= base) >= 1)
 		i++;
 	str = (char *)malloc(sizeof(char) * (i + 1));
 	str[i] = '\0';
 	value_tmp = value;
-	while (i-- + sign)
+	while (i--)
 	{
-		str[i] = (value_tmp % base < 10) ? value_tmp % base + '0' : value_tmp % base + 'A' - 10;
+		str[i] = (value_tmp % base < 10) ? value_tmp % base + '0' : value_tmp % base + x - 10;
 		value_tmp /= base;
 	}
-	(i == 0) ? str[i] = '-' : 0;
 	return (str);
 }
 
-char	*ft_itoa_new(long long int n)
+char	*ft_itoa_signed(long long int n)
 {
 	char	*fresh;
 	int		len;
@@ -51,6 +63,31 @@ char	*ft_itoa_new(long long int n)
 		return (NULL);
 	if (n == -9223372036854775808)
 	 	return (ft_strdup("9223372036854775808"));
+    if (n == 0)
+		fresh[0] = '0';
+	fresh[len] = '\0';
+	while (n > 0 && len > 0)
+	{
+		fresh[--len] = n % 10 + '0';
+		n /= 10;
+	}
+	return (fresh);
+}
+
+char	*ft_itoa_unsigned(unsigned long long int n)
+{
+	char	*fresh;
+	int		len;
+	unsigned long long int		nb;
+
+	len = 0;
+	nb = n;
+	if (nb == 0)
+		len = 1;
+	while (nb > 0 && ++len)
+		nb /= 10;
+	if (!(fresh = (char *)malloc(sizeof(char) * len + 1)))
+		return (NULL);
     if (n == 0)
 		fresh[0] = '0';
 	fresh[len] = '\0';
@@ -80,6 +117,26 @@ long long int cast_di(t_base *base, t_flags *fl)
     //     di = va_arg(base->ap, );
     else
         return (va_arg(base->ap, int));
+}
+
+unsigned long long int cast_ou(t_base *base, t_flags *fl)
+{
+    if (fl->j)
+    	return (va_arg(base->ap, intmax_t));
+	else if (fl->l)
+        return (va_arg(base->ap, unsigned long int)); 
+	else if (fl->z)
+        return (va_arg(base->ap, size_t));
+	else if (fl->h)
+        return ((unsigned short)va_arg(base->ap, unsigned int));
+    else if (fl->hh)
+        return ((unsigned char)va_arg(base->ap, unsigned int));
+    else if (fl->ll)
+        return (va_arg(base->ap, unsigned long long int));
+    // else if (fl->L)
+    //     di = va_arg(base->ap, );
+    else
+        return (va_arg(base->ap, unsigned int));
 }
 
 char	*join_all(char *s1, char *s2, char *s3)
@@ -119,4 +176,16 @@ char	*join_all(char *s1, char *s2, char *s3)
     if (s3)
        free(s3);
 	return (fresh);
+}
+
+char *hash_x_func(t_flags *fl, char *str)
+{
+	char *buff;
+	
+	if (fl->con == 'x')
+        buff = ft_strjoin("0x", str);
+    else if (fl->con == 'X')
+        buff = ft_strjoin("0X", str);
+	free(str);
+	return (buff);
 }

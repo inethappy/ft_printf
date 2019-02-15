@@ -4,14 +4,14 @@ void ft_parsing(t_base *base)
 {
     t_flags fl;
 
-    ft_bzero(&fl, sizeof(fl)); //ft_memalloc(sizeof(fl)); ?
+    ft_bzero(&fl, sizeof(fl));
     while (*base->fmt != '\0' && ft_strchr(" 0+#-123456789*.lzhjL", *base->fmt))
     {
         if (ft_strchr("#0- +", *base->fmt))
             ft_search_fl(base->fmt, &fl);
         else if (ft_strchr("123456789*", *base->fmt))
             ft_search_width(base, &fl);
-        else if (ft_strchr(".", *base->fmt)) //&& ft_strchr("0123456789*", *(base->fmt + 1)))
+        else if (ft_strchr(".", *base->fmt))
             ft_search_prec(base, &fl);
         else if (ft_strchr("zhlLj", *base->fmt))
             ft_search_length(base->fmt, &fl);
@@ -21,10 +21,35 @@ void ft_parsing(t_base *base)
     if (*base->fmt == '\0')
         return ;
     if (ft_strchr("diouxXscpfF", *base->fmt))
+    {
         fl.con = *base->fmt;
-    base->fmt++;
-    work_cur_case(base, &fl);
-    ft_strdel(&base->str);
+        base->fmt++;
+        work_cur_case(base, &fl);
+    }
+    else
+        con_not_found(base, &fl);
+    *base->str ? (ft_strdel(&base->str)) : 0;
+}
+
+void con_not_found(t_base *base, t_flags *fl)
+{
+    char *ss;
+    if (*base->fmt == '%')
+    {
+        if (fl->width > 1)
+        {
+            ss = ft_strnew(fl->width - 1);
+            (fl->null && !fl->minus) ? ft_memset(ss, 48, (fl->width - 1)) 
+                : ft_memset(ss, 32, fl->width - 1); 
+            base->str = fl->minus ? (ft_strjoin("%", ss)) : (ft_strjoin(ss, "%"));
+            free(ss);
+        }
+        else
+            base->str = ft_strdup("%");
+        ft_putstr(base->str);
+        base->res = base->res + ft_strlen(base->str);
+        base->fmt++;
+    }
 }
 
 int ft_printf(const char *format, ...)
@@ -43,7 +68,7 @@ int ft_printf(const char *format, ...)
         }
         if (*base.fmt && *base.fmt != '%')
         {
-            ft_putchar(*base.fmt); //save in str?
+            ft_putchar(*base.fmt);
             base.res++;
             base.fmt++; 
         }
