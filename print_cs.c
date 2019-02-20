@@ -6,7 +6,7 @@ int ft_printing_c(t_base *base, t_flags *fl)
 
     fl->width = (fl->width == 0) ? 1 : fl->width;
     c = va_arg(base->ap, int);
-    base->str = (ft_strnew(fl->width) + fl->space);
+    base->str = (ft_strnew(fl->width + fl->space + 1));
     fl->null ? ft_memset(base->str, 48, fl->width) : ft_memset(base->str, 32, fl->width); 
     fl->minus ? (base->str[0] = c) : (base->str[fl->width - 1] = c);
     ft_putstr(base->str);
@@ -57,8 +57,27 @@ int ft_printing_s(t_base *base, t_flags *fl)
 
 int ft_printing_p(t_base *base, t_flags *fl)
 {
-    char *p;
-    p = va_arg(base->ap, void *);
-   
-    return (ft_strlen(p));
+    char *x;
+    x = va_arg(base->ap, void *);
+    fl->l = 1;
+    fl->hash = 1;
+    fl->con = 'x';
+    fl->prec = 1;
+    base->str = (x == 0) ? (ft_strdup("0")) : ft_itoa_base((unsigned long long)x, 16, fl);
+    fl->len = (ft_strlen(base->str));
+    if (x == 0 && fl->dot && !fl->width)
+    {
+        free(base->sign);
+        return 0;
+    }
+    if (fl->hash && fl->width)
+        fl->width -= 2;
+    if (/*x != 0 && */(!fl->null || fl->minus))
+        base->str = hash_x_func(fl, base->str);
+    if (!fl->minus)
+        put_dio_if_not_minus((long long)x, fl, base);
+    else
+        put_dio_if_minus((long long)x, fl, base);
+    ft_putstr(base->str);
+    return (ft_strlen(base->str));
 }

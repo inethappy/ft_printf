@@ -1,6 +1,7 @@
 #include <wchar.h> 
 #include "ft_printf.h"
-#define STRING "%#15.4x", 424242
+#define STRING "{%+-25f}", 12.37
+// "@main_ftprintf: %####0000 33..1..#00d\n", 256
 //"{%*3d}", 0, 0
 
 int main()
@@ -14,11 +15,12 @@ int main()
     c = 'c';
     int g;
     g = -42;
-   
-   char *new;
+   char *test_simple_mix;
+   char new[100];
+   double a = 0.51;
     // printf("printf: %s, %c, [%+d]\n", s, c, g); 
     res = ft_printf(STRING);
-   printf("\n%d\n", res);
+    printf("\n%d\n", res);
     res = printf(STRING);
     printf("\n%d\n", res);
    

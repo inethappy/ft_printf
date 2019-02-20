@@ -28,7 +28,9 @@ void ft_parsing(t_base *base)
     }
     else
         con_not_found(base, &fl);
-    *base->str ? (ft_strdel(&base->str)) : 0;
+    // if (base->str)
+    //     ft_strdel(&base->str);
+    base->str ? (ft_strdel(&base->str)) : 0;
 }
 
 void con_not_found(t_base *base, t_flags *fl)

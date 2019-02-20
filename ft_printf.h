@@ -17,6 +17,8 @@ typedef struct s_base
 
 typedef struct      s_flags
 {
+    int len;
+
     int hash;
     int null;
     int minus;
@@ -55,7 +57,7 @@ void work_cur_case(t_base *base, t_flags *fl);
 int print_con_scp(t_base *base, t_flags *fl);
 int print_con_o(t_base *base, t_flags *fl);
 int print_con_di(t_base *base, t_flags *fl);
-int print_con_f(t_base *base, t_flags *fl);
+int print_con_fF(t_base *base, t_flags *fl);
 int print_con_u(t_base *base, t_flags *fl);
 int print_con_xX(t_base *base, t_flags *fl);
 
@@ -67,13 +69,14 @@ void put_prec(long long int di, t_flags *fl, char *str);
 
 char *join_all(char *s1, char *s2, char *s3);
 int	ft_len_nb(long long int nb);
-int	ft_len_nb_uns(unsigned long long int nb);
 char	*ft_itoa_signed(long long int n);
 long long int cast_di(t_base *base, t_flags *fl);
 unsigned long long int cast_ou(t_base *base, t_flags *fl);
 char *ft_itoa_base(unsigned long long int value, int base, t_flags *fl);
 char *hash_x_func(t_flags *fl, char *str);
 char	*ft_itoa_unsigned(unsigned long long int n);
+void ft_ftoa(double nb, t_base *base, t_flags *fl);
+char *ft_prec_f(char *fresh, t_base *base, t_flags *fl, double nb);
 
 int ft_printing_c(t_base *base, t_flags *fl);
 int ft_printing_s(t_base *base, t_flags *fl);

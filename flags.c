@@ -47,6 +47,8 @@ void ft_search_prec(t_base *base, t_flags *fl)
         if (fl->prec < 0)
             fl->prec = 0;
     }
+    // else if (ft_strchr("0", *(base->fmt)) && !ft_strchr("123456789", *(base->fmt + 1)))
+    //     fl->dot = -1;
     else
     {
         fl->dot = 1;
@@ -67,8 +69,8 @@ void work_cur_case(t_base *base, t_flags *fl)
         base->res = base->res + print_con_u(base, fl);
     else if (ft_strchr("xX", fl->con))
         base->res = base->res + print_con_xX(base, fl);
-    // else if (ft_strchr("fF", fl->con))
-    //     base->res = base->res + print_con_f(base, fl);
+    else if (ft_strchr("fF", fl->con))
+        base->res = base->res + print_con_fF(base, fl);
     // else
     //     base->res = 0;
 }

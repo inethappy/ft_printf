@@ -17,18 +17,6 @@ int	ft_len_nb(long long int nb)
 	return (len);
 }
 
-// int	ft_len_nb_uns(unsigned long long int nb)
-// {
-// 	int len;
-
-// 	len = 0;
-// 	else if (nb == 0)
-// 		len = 1;
-// 	while (nb > 0 && ++len)
-// 		nb /= 10;
-// 	return (len);
-// }
-
 char *ft_itoa_base(unsigned long long int value, int base, t_flags *fl)
 {
 	char *str;
@@ -146,7 +134,9 @@ char	*join_all(char *s1, char *s2, char *s3)
     int a;
     int b;
     int c;
-    //a,b,c = 0;
+    // a = 0;
+    // b = 0;
+    // c = 0;
 
     if (s1)
         a = ft_strlen(s1);
