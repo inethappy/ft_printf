@@ -93,8 +93,8 @@ int print_con_xX(t_base *base, t_flags *fl)
         put_dio_if_not_minus(x, fl, base);
     else
         put_dio_if_minus(x, fl, base);
-    // if (x != 0 && fl->hash && (!fl->null || fl->minus))
-    //     base->str = hash_x_func(fl, base->str, x);
+    if (x != 0 && fl->hash && fl->prec && (!fl->null || fl->minus))
+        base->str = hash_x_func(fl, base->str, x);
     ft_putstr(base->str);
     return (ft_strlen(base->str));
 }

@@ -1,6 +1,7 @@
 #include <wchar.h> 
 #include "ft_printf.h"
-#define STRING "{%#.5x}", 1
+#define STRING "{%f}{%F}", 1.42, 1.42
+// "{%#.5x}", 1
 // #define STRING2 "%#8x", 42
 // "{%*3d}", 0, 0
 // "@main_ftprintf: %####0000 33..1..#00d\n", 256
