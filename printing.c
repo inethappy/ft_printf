@@ -45,7 +45,7 @@ int print_con_o(t_base *base, t_flags *fl)
     if (fl->hash)
     {
         if (!fl->prec && !fl->null)
-            fl->prec = (/*fl->dot || */o == 0) ? (fl->len) : (fl->len + 1);
+            fl->prec = (o == 0) ? (fl->len) : (fl->len + 1);
     }
     if (!fl->minus)
         put_dio_if_not_minus(o, fl, base);
@@ -86,7 +86,7 @@ int print_con_xX(t_base *base, t_flags *fl)
     if (fl->hash && fl->width)
         fl->width -= 2;
     
-    if (x != 0 && fl->hash && (!fl->null || fl->minus) && !fl->prec)//(fl->null || !fl->minus))
+    if (x != 0 && fl->hash && (!fl->null || fl->minus) && !fl->prec)
         base->str = hash_x_func(fl, base->str, x);
     
     if (!fl->minus)
@@ -111,37 +111,52 @@ int print_con_fF(t_base *base, t_flags *fl)
 
 void	ft_ftoa(double nb, t_base *base, t_flags *fl)
 {
-	char	*fresh;
-	double tmp;
-    double del;
-    int i = 1;
+	char    *fresh;
+	double  tmp;
+    double  del;
+    int     i;
 
-    tmp = nb;
+    i = 1;
     del = 1;
-    while (tmp > 10 && ++i)
-    {
-        tmp /= 10;
+    base->sign = put_sign((long long int)nb, fl);
+    nb = (nb < 0) ? -nb : nb; 
+    tmp = nb;
+    while (tmp > 10 && ++i && (tmp /= 10))
         del *= 10;
-    }
-    fresh = (fl->dot) ? ft_strnew(i) : ft_strnew(i + 1);
+    fresh = (fl->dot || fl->hash) ? ft_strnew(i + 1) : ft_strnew(i);
     i = 0;
-    while (nb >= 1)
+    while (nb >= 1 && (tmp = nb) && (tmp /= del))
     {   
-        tmp = nb;
-        tmp /= del;
-        tmp = (int)tmp;
-        fresh[i++] = (int)tmp % 10 + '0';
+        tmp = (long long int)tmp;
+        fresh[i++] = (long long int)tmp % 10 + '0';
         tmp *= del;
         nb -= tmp;
         del /= 10;
-        // printf("1-%f\n", nb);
-        if (nb < 1 && fl->dot)
-            nb += ((int)(nb + 0.5) % 2 == 0) ? (0.5) : (0.49);
-        // printf("2-%f\n", nb);
+        // printf("%f, %d\n", nb, (long long int)nb);
+        if (nb < 10 && fl->dot)
+            nb += ((long long int)(nb + 0.5) % 2 == 0) ? (0.5) : (0.49);
     }
-    (fl->dot) ? 0: (fresh[i++] = '.');
-    // printf("fresh = %s, nb = %f, atoi_fr = %d\n", fresh, nb, ft_atoi(fresh));
+        // printf("2 %f, %d\n", nb, (long long int)nb);
     base->str = ft_prec_f(fresh, base, fl, nb);
+}
+
+char *ft_make_str_f(t_base *base, t_flags *fl, char *str, char *fresh)
+{
+    char *new;
+    if (fl->width)
+    {
+        if (fl->minus)
+            new = join_all(base->sign, str, print_padding(ft_atoi(fresh), fl, fl->pad));
+        else
+            new = (fl->null) ? join_all(base->sign, print_padding(ft_atoi(fresh), fl, fl->pad), str) 
+                : join_all(print_padding(ft_atoi(fresh), fl, fl->pad), base->sign, str);
+    }
+    else
+        new = ft_strjoin(base->sign, str);
+    if (fl->dot && fl->hash)
+        new[ft_strlen(new)] = '.';
+    ft_strdel(&str);
+    return (new);
 }
 
 void del_str(char *s1, char *s2)
@@ -156,48 +171,25 @@ char *ft_prec_f(char *fresh, t_base *base, t_flags *fl, double nb)
     char *new;
     char *buf;
     int i;
-    double j = 5;
-    
-    pad = (fl->null && !fl->minus) ? (48) : (32);
-    base->sign = put_sign(ft_atoi(fresh), fl); // ????????!
+    double j;
+
+    fl->len = ft_strlen(fresh);
+    fl->pad = (fl->null && !fl->minus) ? (48) : (32);
     if (fl->dot)
-    {
-        fl->len = ft_strlen(fresh);
-        if (fl->width)
-        {
-            if (fl->minus)
-                new = join_all(base->sign, fresh, print_padding(ft_atoi(fresh), fl, pad));
-            else
-                new = (fl->null) ? join_all(base->sign, print_padding(ft_atoi(fresh), fl, pad), fresh) 
-                    : join_all(print_padding(ft_atoi(fresh), fl, pad), base->sign, fresh);
-        }
-        else
-            new = ft_strjoin(base->sign, fresh);
-        return (new);
-    }
+        return (ft_make_str_f(base, fl, fresh, fresh));
+    j = 5;
+    fresh[fl->len] = '.';
     fl->prec = fl->prec ? fl->prec : 6;
     i = -1;
-        while (++i <= fl->prec)
-            j /= 10;
-    if (fl->prec < ft_strlen(fresh))
-        nb += j;
+    while (++i <= fl->prec)
+        j /= 10;
+    nb += j;
     while (--i)
         nb *= 10; 
     new = ft_itoa_unsigned((unsigned long long int)nb);
     buf = ft_strjoin(fresh, new);
+    fl->len = ft_strlen(buf);
     del_str(fresh, new);
-    fl->prec= 0;
-    if (fl->width)
-    {
-        fl->len = ft_strlen(buf);
-        if (fl->minus)
-            base->str = join_all(base->sign, buf, print_padding(ft_atoi(fresh), fl, pad));
-        else
-            base->str = (fl->null) ? join_all(base->sign, print_padding(ft_atoi(fresh), fl, pad), buf) 
-                : join_all(print_padding(ft_atoi(fresh), fl, pad), base->sign, buf);
-    }
-    else
-        base->str = ft_strjoin(base->sign, buf);
-    // printf("4---%d, %s, base->str = [%s]\n", i, new, base->str);
-    return (base->str);
+    fl->prec = 0;
+    return (ft_make_str_f(base, fl, buf, fresh));
 }

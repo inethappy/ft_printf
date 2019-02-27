@@ -1,6 +1,6 @@
 #include <wchar.h> 
 #include "ft_printf.h"
-#define STRING "{%f}{%F}", 1.42, 1.42
+#define STRING "%#.f", 42457666.5647477
 // "{%#.5x}", 1
 // #define STRING2 "%#8x", 42
 // "{%*3d}", 0, 0
@@ -33,7 +33,7 @@ int main()
    
    //printf("wchar_t = %lu\n", sizeof(wchar_t));
 
-    // system("leaks ft_printf.out");
+    system("leaks ft_printf.out");
     return 0;
 }
 

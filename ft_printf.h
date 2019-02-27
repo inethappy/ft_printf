@@ -40,6 +40,7 @@ typedef struct      s_flags
     int j;
 
     char con;
+    int pad;
  }                   t_flags;
 
 int ft_printf(const char *format, ...);
@@ -77,6 +78,7 @@ char *hash_x_func(t_flags *fl, char *str, int x);
 char	*ft_itoa_unsigned(unsigned long long int n);
 void ft_ftoa(double nb, t_base *base, t_flags *fl);
 char *ft_prec_f(char *fresh, t_base *base, t_flags *fl, double nb);
+char *fft_make_str_f(t_base *base, t_flags *fl, int pad, char *fresh);
 
 int ft_printing_c(t_base *base, t_flags *fl);
 int ft_printing_s(t_base *base, t_flags *fl);
