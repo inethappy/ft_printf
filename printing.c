@@ -2,12 +2,12 @@
 
 int print_con_scp(t_base *base, t_flags *fl)
 {
-    if (fl->con == 's')
-        return(ft_printing_s(base, fl));
-    if (fl->con == 'c')
-        return(ft_printing_c(base, fl));
+    if (fl->con == 's' || fl->con == 'S')
+        return (ft_printing_s(base, fl));
+    if (fl->con == 'c' || fl->con == 'C')
+        return (ft_printing_c(base, fl));
     else
-        return(ft_printing_p(base, fl));
+        return (ft_printing_p(base, fl));
     return 0;
 }
 
@@ -22,7 +22,7 @@ int print_con_di(t_base *base, t_flags *fl)
     if (di == 0 && fl->dot && !fl->width)
     {
         free(base->sign);
-        return 0;
+        return (0);
     }
     if (!fl->minus)
         put_dio_if_not_minus(di, fl, base);
@@ -38,17 +38,14 @@ int print_con_o(t_base *base, t_flags *fl)
 
     o = cast_ou(base, fl);
     base->str = ft_itoa_base(o, 8, fl);
-    base->sign = ft_strnew(1);
+    base->sign = NULL;
     fl->len = (ft_strlen(base->str));
     if (o == 0 && fl->dot && !fl->width && !fl->hash)
-    {
-        free(base->sign);
         return 0;
-    }
     if (fl->hash)
     {
         if (!fl->prec && !fl->null)
-            fl->prec = fl->dot ? (ft_len_nb(o)) : (ft_len_nb(o) + 1);
+            fl->prec = (/*fl->dot || */o == 0) ? (fl->len) : (fl->len + 1);
     }
     if (!fl->minus)
         put_dio_if_not_minus(o, fl, base);
@@ -64,13 +61,10 @@ int print_con_u(t_base *base, t_flags *fl)
 
     u = cast_ou(base, fl);
     base->str = ft_itoa_unsigned(u);
-    base->sign = ft_strnew(1);
+    base->sign = NULL;
     fl->len = (ft_strlen(base->str));
     if (u == 0 && fl->dot && !fl->width)
-    {
-        free(base->sign);
         return 0;
-    }
     if (!fl->minus)
         put_dio_if_not_minus(u, fl, base);
     else
@@ -85,21 +79,22 @@ int print_con_xX(t_base *base, t_flags *fl)
 
     x = cast_ou(base, fl);
     base->str = ft_itoa_base(x, 16, fl);
-    base->sign = ft_strnew(1);
+    base->sign = NULL;
     fl->len = (ft_strlen(base->str));
     if (x == 0 && fl->dot && !fl->width)
-    {
-        free(base->sign);
         return 0;
-    }
     if (fl->hash && fl->width)
         fl->width -= 2;
-    if (x != 0 && fl->hash && (!fl->null || fl->minus))
-        base->str = hash_x_func(fl, base->str);
+    
+    if (x != 0 && fl->hash && (!fl->null || fl->minus) && !fl->prec)//(fl->null || !fl->minus))
+        base->str = hash_x_func(fl, base->str, x);
+    
     if (!fl->minus)
         put_dio_if_not_minus(x, fl, base);
     else
         put_dio_if_minus(x, fl, base);
+    // if (x != 0 && fl->hash && (!fl->null || fl->minus))
+    //     base->str = hash_x_func(fl, base->str, x);
     ft_putstr(base->str);
     return (ft_strlen(base->str));
 }
@@ -109,7 +104,6 @@ int print_con_fF(t_base *base, t_flags *fl)
     double f;
 
     f = va_arg(base->ap, double);
-    // printf("====%d\n", ft_len_nb(f));
     ft_ftoa(f, base, fl);
     ft_putstr(base->str);
     return (ft_strlen(base->str));
@@ -206,30 +200,4 @@ char *ft_prec_f(char *fresh, t_base *base, t_flags *fl, double nb)
         base->str = ft_strjoin(base->sign, buf);
     // printf("4---%d, %s, base->str = [%s]\n", i, new, base->str);
     return (base->str);
-    
-    
-        // printf("%.7f, prec = %d\n", j, fl->prec);
-    // nb += ((int)(nb + 0.5) % 2 == 0) ? (0.5) : (0.49);// base->str = ft_itoa_unsigned(nb);
-
-    // i = fl->width;
-    // fl->width = 0;
-    // fl->prec = fl->prec ? fl->prec : 6;
-    // fl->len = ft_strlen(base->str);
-    // buf = print_padding(nb, fl, 48);
-    // new = (fl->prec > fl->len) ? ft_strjoin(base->str, buf): ft_strdup(base->str);
-    // del_str(base->str, buf);
-    // base->str = ft_strjoin(fresh, new);
-    // del_str(fresh, new);
-    // fl->len = ft_strlen(base->str);
-    // fl->width = i;
-    // fl->prec = 0;
-    // if (i > fl->len)
-    //     new = (fl->minus) ? (join_all(base->sign, base->str, print_padding(nb, fl, pad))) 
-    //         : (join_all(print_padding(nb, fl, pad), base->sign, base->str));
-    // else
-    // {
-    //     new = ft_strjoin(base->sign, base->str);
-    //     del_str(base->sign, base->str);
-    // }
-    // return (new);
 }

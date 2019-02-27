@@ -1,8 +1,10 @@
 #include <wchar.h> 
 #include "ft_printf.h"
-#define STRING "{%+-25f}", 12.37
+#define STRING "{%#.5x}", 1
+// #define STRING2 "%#8x", 42
+// "{%*3d}", 0, 0
 // "@main_ftprintf: %####0000 33..1..#00d\n", 256
-//"{%*3d}", 0, 0
+// 
 
 int main()
 {
@@ -18,10 +20,14 @@ int main()
    char *test_simple_mix;
    char new[100];
    double a = 0.51;
+   	unsigned long l;
+
     // printf("printf: %s, %c, [%+d]\n", s, c, g); 
     res = ft_printf(STRING);
+    // res = ft_printf(STRING2);
     printf("\n%d\n", res);
     res = printf(STRING);
+    // res = printf(STRING2);
     printf("\n%d\n", res);
    
    //printf("wchar_t = %lu\n", sizeof(wchar_t));
@@ -29,3 +35,4 @@ int main()
     // system("leaks ft_printf.out");
     return 0;
 }
+

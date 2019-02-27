@@ -24,12 +24,17 @@ char *print_padding(long long int di, t_flags *fl, int pad)
     if ((fl->width > fl->prec && fl->width <= fl->len) 
         || (!fl->width && fl->prec <= fl->len))
         return NULL;
-    if (fl->width >= fl->prec)
-        wd = fl->width;
+    if (fl->prec && fl->width >= fl->prec)
+        wd = (di == 0 && !fl->dot && (fl->prec && !fl->space)) ? (fl->width - 1) : fl->width;
+    else if (!fl->prec && fl->width)
+    {
+        wd = (di == 0 && !fl->dot && !fl->minus) ? (fl->width - 1) : fl->width;
+        wd += (di == 0 && (!fl->dot && (!fl->plus && !fl->space) && !fl->minus)) ? 1 : 0;
+    }
     else
         wd = (di < 0 || fl->plus) ? fl->prec + 1 : fl->prec;
     if (wd > fl->len)
-        var = (di < 0) ? (wd - fl->len) : (wd - fl->len - fl->plus);
+        var = (di <= 0 && !fl->prec && (!fl->plus || !fl->minus)) ? (wd - fl->len) : (wd - fl->len - fl->plus);
     str = ft_strnew(var + 1);
     ft_memset(str, pad, var);
     if (fl->prec >= fl->len && fl->width)
@@ -37,13 +42,10 @@ char *print_padding(long long int di, t_flags *fl, int pad)
     else if (fl->prec < fl->len && fl->width > fl->len)
         if (fl->space && fl->null && (!fl->plus && di > 0))
             str[0] = 32;
-    if (fl->hash && fl->null)
-        str = hash_x_func(fl, str);
+    if (fl->hash && fl->null)// || (fl->hash && fl->prec))
+        str = hash_x_func(fl, str, di);
     return (str);
 }
-
-
-
 
 void put_dio_if_not_minus(long long int di, t_flags *fl, t_base *base)
 {
@@ -55,9 +57,9 @@ void put_dio_if_not_minus(long long int di, t_flags *fl, t_base *base)
     else if (((!fl->null && ((fl->width && !fl->prec) || (fl->width > fl->prec))) 
         || (fl->null && (fl->prec || fl->dot) && fl->width > fl->prec)))
     {
-        if (di == 0 && !fl->prec && fl->width)
+        if (di == 0 && fl->dot && fl->width)// && fl->con != 'x') //////////
             base->str[0] = 32;
-        else if (fl->width > fl->prec && fl->prec >= fl->len)
+        if (fl->width > fl->prec && fl->prec >= fl->len)
             ft_strdel(&base->sign);
         base->str = join_all(print_padding(di, fl, 32), base->sign, base->str);
     }
@@ -77,7 +79,7 @@ void put_dio_if_minus(long long int di, t_flags *fl, t_base *base)
         {
             i = fl->width;
             fl->width = 0;
-            s = (fl->con == 'u') ? print_padding(di, fl, 48) : ft_strjoin(base->sign, print_padding(di, fl, 48));
+            s = (fl->con == 'o' || fl->con == 'u') ? print_padding(di, fl, 48) : ft_strjoin(base->sign, print_padding(di, fl, 48));
             s = ft_strjoin(s, base->str);
             fl->width = i - (fl->prec - fl->len);
             fl->prec = 0;  

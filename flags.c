@@ -44,8 +44,11 @@ void ft_search_prec(t_base *base, t_flags *fl)
     else if (ft_strchr("*", *(base->fmt)))
     {
         fl->prec = va_arg(base->ap, int);
+        if (fl->prec == 0)
+            fl->dot = 1;
         if (fl->prec < 0)
             fl->prec = 0;
+        
     }
     // else if (ft_strchr("0", *(base->fmt)) && !ft_strchr("123456789", *(base->fmt + 1)))
     //     fl->dot = -1;
@@ -59,13 +62,14 @@ void ft_search_prec(t_base *base, t_flags *fl)
 
 void work_cur_case(t_base *base, t_flags *fl)
 {
-    if (ft_strchr("scp", fl->con))
+
+    if (ft_strchr("sScCp", fl->con))
         base->res = base->res + print_con_scp(base, fl);
-    else if (ft_strchr("di", fl->con))
+    else if (ft_strchr("dDi", fl->con))
         base->res = base->res + print_con_di(base, fl);
-    else if (ft_strchr("o", fl->con))
+    else if (ft_strchr("oO", fl->con))
         base->res = base->res + print_con_o(base, fl);
-    else if (ft_strchr("u", fl->con))
+    else if (ft_strchr("uU", fl->con))
         base->res = base->res + print_con_u(base, fl);
     else if (ft_strchr("xX", fl->con))
         base->res = base->res + print_con_xX(base, fl);

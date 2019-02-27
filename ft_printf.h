@@ -73,7 +73,7 @@ char	*ft_itoa_signed(long long int n);
 long long int cast_di(t_base *base, t_flags *fl);
 unsigned long long int cast_ou(t_base *base, t_flags *fl);
 char *ft_itoa_base(unsigned long long int value, int base, t_flags *fl);
-char *hash_x_func(t_flags *fl, char *str);
+char *hash_x_func(t_flags *fl, char *str, int x);
 char	*ft_itoa_unsigned(unsigned long long int n);
 void ft_ftoa(double nb, t_base *base, t_flags *fl);
 char *ft_prec_f(char *fresh, t_base *base, t_flags *fl, double nb);

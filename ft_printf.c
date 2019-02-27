@@ -20,7 +20,7 @@ void ft_parsing(t_base *base)
     }
     if (*base->fmt == '\0')
         return ;
-    if (ft_strchr("diouxXscpfF", *base->fmt))
+    if (ft_strchr("dDioOuUxXsScCpfF", *base->fmt))
     {
         fl.con = *base->fmt;
         base->fmt++;
@@ -28,8 +28,6 @@ void ft_parsing(t_base *base)
     }
     else
         con_not_found(base, &fl);
-    // if (base->str)
-    //     ft_strdel(&base->str);
     base->str ? (ft_strdel(&base->str)) : 0;
 }
 
@@ -52,6 +50,8 @@ void con_not_found(t_base *base, t_flags *fl)
         base->res = base->res + ft_strlen(base->str);
         base->fmt++;
     }
+    else 
+        base->res = base->res + ft_printing_c(base, fl);
 }
 
 int ft_printf(const char *format, ...)
