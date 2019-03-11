@@ -1,121 +1,107 @@
- #include "ft_printf.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print_numbers.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mkotytsk <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/03/01 13:43:42 by mkotytsk          #+#    #+#             */
+/*   Updated: 2019/03/01 13:43:47 by mkotytsk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void put_prec(long long int di, t_flags *fl, char *str)
+#include "ft_printf.h"
+
+void	put_prec(long long int di, t_flags *fl, char *str)
 {
 	int i;
+	int j;
 
-	(di < 0) ? ft_memset((str + (fl->width - fl->prec)), 48, (fl->prec - fl->len + 1))
-			: ft_memset((str + (fl->width - fl->prec)), 48, (fl->prec - fl->len));
+	j = (di < 0) ? (fl->prec - fl->len + 1) : (fl->prec - fl->len);
+	ft_memset((str + (fl->width - fl->prec)), 48, j);
 	i = 0;
-	while (str[i + 1] != '0')
+	while (str[i] && str[i + 1] != '0')
 		i++;
-	if (fl->plus && di > 0 && (fl->width > fl->prec))
+	if (fl->plus && di >= 0 && fl->width > fl->prec
+		&& fl->con != 'o' && fl->con != 'O')
 		str[i] = '+';
 	if (di < 0 && (fl->width > fl->prec))
 		str[i] = '-';
 }
 
-char *print_padding(long long int di, t_flags *fl, int pad)
+int		padd_verify(t_flags *fl, long long int di)
 {
-	int var = 0;
-	char *str = NULL;
-	int wd = 0;
+	int wd;
+	int var;
 
-	if ((fl->width > fl->prec && fl->width <= fl->len)
-		|| (!fl->width && fl->prec <= fl->len))
-		return NULL;
-	if (fl->prec && fl->width >= fl->prec)
-		wd = (di == 0 && !fl->dot && (fl->prec && !fl->space)) ? (fl->width - 1) : fl->width;
-	else if (!fl->prec && fl->width)
+	var = 0;
+	if (fl->width >= fl->prec)
 	{
-		wd = (di == 0 && !fl->dot && !fl->minus) ? (fl->width - 1) : fl->width;
-		wd += (di == 0 && !fl->dot && (!fl->plus && !fl->space && !fl->minus)) ? 1 : 0;
+		wd = fl->width;
+		wd -= ((fl->space || fl->plus) && fl->width && di >= 0) ? 1 : 0;
 	}
 	else
-		wd = (di < 0 || fl->plus) ? fl->prec + 1 : fl->prec;
+		wd = (di < 0) ? fl->prec + 1 : fl->prec;
 	if (wd > fl->len)
-		var = (di <= 0 && !fl->prec && (!fl->plus || !fl->minus)) ? (wd - fl->len) : (wd - fl->len - fl->plus);
+		var = (wd - fl->len);
+	return (var);
+}
+
+char	*paddings(long long int di, t_flags *fl, int pad)
+{
+	int		var;
+	char	*str;
+
+	var = 0;
+	str = NULL;
+	if ((fl->width > fl->prec && fl->width <= fl->len)
+		|| (!fl->width && fl->prec < fl->len))
+		return (NULL);
+	var = padd_verify(fl, di);
 	str = ft_strnew(var + 1);
 	ft_memset(str, pad, var);
-	if (fl->prec >= fl->len && fl->width)
+	if (fl->prec >= fl->len && fl->width > fl->len)
 		put_prec(di, fl, str);
 	else if (fl->prec < fl->len && fl->width > fl->len)
 		if (fl->space && fl->null && (!fl->plus && di > 0))
 			str[0] = 32;
 	if (fl->hash && fl->null)
-		str = hash_x_func(fl, str, (long long int)di);
+		str = ((fl->con == 'x' || fl->con == 'X') && di == 0) ? str
+		: hash_x_func(fl, str, (long long int)di);
 	return (str);
 }
 
-void put_dio_if_not_minus(long long int di, t_flags *fl, t_base *base)
+void	put_dio_if_not_minus(long long int di, t_flags *fl, t_b *base)
 {
 	if (!fl->width && !fl->prec && !fl->null)
-		base->str = join_all(base->sign, print_padding(di, fl, 48), base->str);
-	else if ((fl->null && fl->width && !fl->prec && !fl->dot) || (fl->width <= fl->prec)
-		|| (fl->prec && !fl->width))
-		base->str = join_all(base->sign, print_padding(di, fl, 48), base->str);
-	else if (((!fl->null && ((fl->width && !fl->prec) || (fl->width > fl->prec)))
+		base->str = join_all(base->sign, paddings(di, fl, 48), base->str);
+	else if ((fl->null && fl->width && !fl->prec && !fl->dot)
+		|| (fl->width <= fl->prec) || (fl->prec && !fl->width))
+		base->str = join_all(base->sign, paddings(di, fl, 48), base->str);
+	else if (((!fl->null && ((fl->width && !fl->prec)
+		|| (fl->width > fl->prec)))
 		|| (fl->null && (fl->prec || fl->dot) && fl->width > fl->prec)))
 	{
-		if (di == 0 && fl->dot && fl->width)
+		if (base->str && di == 0 && fl->dot && fl->width)
 			base->str[0] = 32;
 		if (fl->width > fl->prec && fl->prec >= fl->len)
 			ft_strdel(&base->sign);
-		base->str = join_all(print_padding(di, fl, 32), base->sign, base->str);
+		base->str = join_all(paddings(di, fl, 32), base->sign, base->str);
 	}
 }
 
-void put_dio_if_minus(long long int di, t_flags *fl, t_base *base)
+void	put_dio_if_minus(long long int di, t_flags *fl, t_b *base)
 {
-	int i;
-	char *s;
-
+	fl->null = 0;
 	if (!fl->width && !fl->prec && !fl->null)
-		base->str = join_all(base->sign, base->str, print_padding(di, fl, 32));
+		base->str = join_all(base->sign, base->str, paddings(di, fl, 32));
 	else if ((fl->width && !fl->prec) || fl->width > fl->prec)
 	{
-		if (fl->width > fl->prec && fl->width > ft_len_nb(di) && fl->prec > ft_len_nb(di))
-		{
-			i = fl->width;
-			fl->width = 0;
-			s = (fl->con == 'o' || fl->con == 'u') ? print_padding(di, fl, 48)
-				: ft_strjoin(base->sign, print_padding(di, fl, 48));
-			s = ft_strjoin(s, base->str);
-			fl->width = i - (fl->prec - fl->len);
-			fl->prec = 0;
-			ft_strdel(&base->sign);
-			base->str = join_all(base->sign, s, print_padding(di, fl, 32));
-		}
+		if (fl->width > fl->prec && fl->width > fl->len && fl->prec >= fl->len)
+			params_dio_minus(fl, di, base);
 		else
-			base->str = join_all(base->sign, base->str, print_padding(di, fl, 32));
+			base->str = join_all(base->sign, base->str, paddings(di, fl, 32));
 	}
 	else if ((fl->prec && !fl->width) || (fl->prec >= fl->width))
-		base->str = join_all(base->sign, print_padding(di, fl, 48), base->str);
-}
-
-char	*put_sign(long long di, t_flags *fl)
-{
-	char *sign;
-
-	sign = ft_strnew(1);
-	if (fl->plus && di >= 0)
-		sign[0] = '+';
-	else if (di < 0 || ((di < 0)
-				&& (fl->width > fl->prec || fl->width < fl->prec)))
-		sign[0] = '-';
-	else if (fl->space && di >= 0 && !fl->prec)
-		sign[0] = ' ';
-	else if (fl->space && di >= 0 && !fl->plus
-		&& (!fl->width || fl->width <= fl->prec || (di == 0 && fl->width)))
-	{
-		sign[0] = ' ';
-		if (fl->width > fl->prec)
-			fl->width--;
-	}
-	if (!sign)
-	{
-		free(sign);
-		return (NULL);
-	}
-	return (sign);
+		base->str = join_all(base->sign, paddings(di, fl, 48), base->str);
 }

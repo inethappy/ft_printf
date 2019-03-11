@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-void	con_not_found(t_base *base, t_flags *fl)
+void	con_not_found(t_b *base, t_flags *fl)
 {
 	char *ss;
 
@@ -37,18 +37,26 @@ void	con_not_found(t_base *base, t_flags *fl)
 		base->res = base->res + ft_printing_c(base, fl);
 }
 
-void	ft_parsing(t_base *base, t_flags *fl)
+void	search_param(t_b *base, t_flags *fl)
 {
-	while (*base->fmt != '\0' && ft_strchr(" 0+#-123456789*.lzhjL", *base->fmt))
+	if (ft_strchr("#0- +", *base->fmt))
+		ft_search_fl(base->fmt, fl);
+	else if (ft_strchr("123456789*", *base->fmt))
+		ft_search_width(base, fl);
+	else if (ft_strchr(".", *base->fmt))
+		ft_search_prec(base, fl);
+	else if (ft_strchr("zhlLj", *base->fmt))
+		ft_search_length(base->fmt, fl);
+}
+
+void	ft_parsing(t_b *base, t_flags *fl)
+{
+	while (*base->fmt != '\0')
 	{
-		if (ft_strchr("#0- +", *base->fmt))
-			ft_search_fl(base->fmt, fl);
-		else if (ft_strchr("123456789*", *base->fmt))
-			ft_search_width(base, fl);
-		else if (ft_strchr(".", *base->fmt))
-			ft_search_prec(base, fl);
-		else if (ft_strchr("zhlLj", *base->fmt))
-			ft_search_length(base->fmt, fl);
+		if (ft_strchr(" 0+#-123456789*.lzhjL", *base->fmt))
+			search_param(base, fl);
+		else
+			break ;
 		base->fmt++;
 	}
 	if (*base->fmt == '\0')
@@ -66,7 +74,7 @@ void	ft_parsing(t_base *base, t_flags *fl)
 
 int		ft_printf(const char *format, ...)
 {
-	t_base	base;
+	t_b		base;
 	t_flags	fl;
 
 	ft_bzero(&fl, sizeof(fl));

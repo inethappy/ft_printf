@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-int		ft_printing_c(t_base *base, t_flags *fl)
+int		ft_printing_c(t_b *base, t_flags *fl)
 {
 	char c;
 
@@ -27,13 +27,13 @@ int		ft_printing_c(t_base *base, t_flags *fl)
 	base->str = (ft_strnew(fl->width + fl->space + 1));
 	if (c == 0)
 	{
-		fl->null ? ft_memset(base->str, 48, (fl->width - 1))
+		(fl->null && !fl->minus) ? ft_memset(base->str, 48, (fl->width - 1))
 			: ft_memset(base->str, 32, (fl->width - 1));
 		fl->minus ? ft_putchar('\0') : ft_putstr(base->str);
 		fl->minus ? ft_putstr(base->str) : ft_putchar('\0');
 		return (ft_strlen(base->str) + 1);
 	}
-	fl->null ? ft_memset(base->str, 48, fl->width)
+	(fl->null && !fl->minus) ? ft_memset(base->str, 48, fl->width)
 		: ft_memset(base->str, 32, fl->width);
 	fl->pad = fl->minus ? 0 : (fl->width - 1);
 	base->str[fl->pad] = c;
@@ -41,7 +41,7 @@ int		ft_printing_c(t_base *base, t_flags *fl)
 	return (ft_strlen(base->str));
 }
 
-void	ft_prec_s(t_flags *fl, t_base *base, char *s, char *ss)
+void	ft_prec_s(t_flags *fl, t_b *base, char *s, char *ss)
 {
 	int i;
 
@@ -55,15 +55,18 @@ void	ft_prec_s(t_flags *fl, t_base *base, char *s, char *ss)
 	free(ss);
 }
 
-int		ft_printing_s(t_base *base, t_flags *fl)
+int		ft_printing_s(t_b *base, t_flags *fl)
 {
 	char *s;
 	char *ss;
 	char *s_pr;
 
+	s_pr = NULL;
+	s = NULL;
+	ss = NULL;
 	s = va_arg(base->ap, char*);
 	if (((s == NULL && !fl->width) || (s == NULL && !fl->prec)) && !fl->dot)
-		return (ft_null(base));
+		return (ft_null(base, fl));
 	else if (s == NULL && fl->width)
 		s = ft_strdup("0");
 	if (fl->prec)
@@ -73,7 +76,7 @@ int		ft_printing_s(t_base *base, t_flags *fl)
 		s = ft_strdup(s_pr);
 		free(s_pr);
 	}
-	if (fl->dot || fl->width > ft_strlen(s))
+	if (fl->dot || fl->width > (int)ft_strlen(s))
 		ft_prec_s(fl, base, s, ss);
 	else
 		base->str = ft_strdup(s);
@@ -81,7 +84,7 @@ int		ft_printing_s(t_base *base, t_flags *fl)
 	return (ft_strlen(base->str));
 }
 
-void	ft_point_prec(t_flags *fl, t_base *base, long long x)
+void	ft_point_prec(t_flags *fl, t_b *base, long long x)
 {
 	int i;
 
@@ -89,22 +92,22 @@ void	ft_point_prec(t_flags *fl, t_base *base, long long x)
 	fl->width = fl->prec;
 	fl->prec = 0;
 	base->str = (x != 0 && fl->width)
-		? join_all(base->sign, print_padding((int)x, fl, 48), base->str)
-		: join_all(base->sign, print_padding((int)x, fl, 48), base->str);
+		? join_all(base->sign, paddings((int)x, fl, 48), base->str)
+		: join_all(base->sign, paddings((int)x, fl, 48), base->str);
 	fl->width = i;
 	fl->len = (ft_strlen(base->str));
 }
 
-int		ft_printing_p(t_base *base, t_flags *fl)
+int		ft_printing_p(t_b *base, t_flags *fl)
 {
 	char	*x;
 
 	x = va_arg(base->ap, void *);
 	fl->hash = 1;
-	fl->con = 'x';
 	base->sign = NULL;
+	fl->space = 0;
+	fl->plus = 0;
 	base->str = ft_itoa_base((unsigned long long)x, 16, fl);
-	base->sign = NULL;
 	fl->len = (ft_strlen(base->str));
 	if (fl->hash && fl->width)
 		fl->width -= 2;
